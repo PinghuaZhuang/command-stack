@@ -1,0 +1,4 @@
+vite.config*
+
+*.lock
+*.yarml
