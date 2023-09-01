@@ -1,0 +1,30 @@
+{
+  "compilerOptions": {
+    "target": "ES2015",
+    "module": "ES2022",
+    "lib": ["ES2022"],
+    "moduleResolution": "Bundler",
+    "resolveJsonModule": true,
+    "importHelpers": true,
+    "jsx": "react-jsx",
+    "esModuleInterop": true,
+    "sourceMap": true,
+    "baseUrl": "./",
+    "strict": true,
+    "paths": {},
+    "allowSyntheticDefaultImports": true,
+    "types": [],
+    "outDir": "./dist",
+    "declaration": true,
+    "declarationMap": true
+  },
+  "include": [
+    "typings.d.ts",
+    "src/**/*"
+  ],
+  "exclude": [
+    "node_modules",
+    "lib",
+    "dist"
+  ]
+}

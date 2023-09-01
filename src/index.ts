@@ -18,9 +18,15 @@ export default class CommandStack<T extends string> extends EventEmitter {
     STACK_CHANGE: 'stack.change',
   };
 
-  #stackIdx = -1;
-  #event: { direction: 1 | -1; current: Action<T>; prev: Action<T> } | null =
-    null;
+  $stackIdx = -1;
+  $event: {
+    /**
+     * 1: 下一步; -1: 上一步
+     */
+    direction: 1 | -1;
+    current: Action<T>;
+    prev: Action<T>;
+  } | null = null;
   _stack: Action<T>[] = [];
   _handlers = {} as Record<T, Handler<T>>;
   _tmpActions: Action<T>[] = [];
@@ -29,22 +35,22 @@ export default class CommandStack<T extends string> extends EventEmitter {
   constructor(handlers: Record<T, Handler<T>>, mergeAction?: MergeAction<T>) {
     super();
     this._handlers = { ...handlers };
+    // PERF: line 81
     this.mergeAction = mergeAction;
     this.rigister();
   }
 
   get _stackIdx() {
-    return this.#stackIdx;
+    return this.$stackIdx;
   }
   set _stackIdx(value) {
-    this.#event = {
+    this.$event = {
       current: this._stack[value],
-      prev: this._stack[this.#stackIdx],
-      // 1: 下一步; -1: 上一步
-      direction: value > this.#stackIdx ? 1 : -1,
+      prev: this._stack[this.$stackIdx],
+      direction: value > this.$stackIdx ? 1 : -1,
     };
-    this.emit(CommandStack.events.STACK_CHANGE, this.#event);
-    this.#stackIdx = value;
+    this.emit(CommandStack.events.STACK_CHANGE, this.$event);
+    this.$stackIdx = value;
   }
 
   get prevDisabled() {
@@ -59,7 +65,7 @@ export default class CommandStack<T extends string> extends EventEmitter {
     this._stack.splice(this._stackIdx + 1);
     this._stack.push(action);
     this._stackIdx++;
-    this.#event = null;
+    this.$event = null;
   }
 
   undo() {
@@ -72,9 +78,10 @@ export default class CommandStack<T extends string> extends EventEmitter {
     this.excute(this._stack[++this._stackIdx]);
   }
 
+  // PERF: 添加防抖? 合并操作?
   excute(action: Action<T>) {
-    this.emit(action.type, this.#event);
-    this.#event = null;
+    this.emit(action.type, this.$event);
+    this.$event = null;
   }
 
   rigister(handlers?: Record<T, Handler<T>>) {
@@ -87,7 +94,7 @@ export default class CommandStack<T extends string> extends EventEmitter {
 
   destroy() {
     this._stackIdx = -1;
-    this.#event = null;
+    this.$event = null;
     this._stack = [];
     const _handlers = this._handlers;
     let actionType: T;
