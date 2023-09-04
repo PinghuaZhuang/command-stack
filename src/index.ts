@@ -30,13 +30,11 @@ export default class CommandStack<T extends string> extends EventEmitter {
   _stack: Action<T>[] = [];
   _handlers = {} as Record<T, Handler<T>>;
   _tmpActions: Action<T>[] = [];
-  mergeAction?: MergeAction<T>;
+  // mergeAction?: MergeAction<T>;
 
-  constructor(handlers: Record<T, Handler<T>>, mergeAction?: MergeAction<T>) {
+  constructor(handlers: Record<T, Handler<T>>) {
     super();
     this._handlers = { ...handlers };
-    // PERF: line 81
-    this.mergeAction = mergeAction;
     this.rigister();
   }
 
@@ -78,7 +76,6 @@ export default class CommandStack<T extends string> extends EventEmitter {
     this.excute(this._stack[++this._stackIdx]);
   }
 
-  // PERF: 添加防抖? 合并操作?
   excute(action: Action<T>) {
     this.emit(action.type, this.$event);
     this.$event = null;
@@ -92,10 +89,14 @@ export default class CommandStack<T extends string> extends EventEmitter {
     }
   }
 
-  destroy() {
+  clean() {
     this._stackIdx = -1;
-    this.$event = null;
     this._stack = [];
+    this.$event = null;
+  }
+
+  destroy() {
+    this.clean();
     const _handlers = this._handlers;
     let actionType: T;
     for (actionType in _handlers) {
