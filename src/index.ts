@@ -1,38 +1,43 @@
 import { EventEmitter } from 'events';
 
-export interface Action<T extends string> {
+export interface Action<T extends string, C extends any> {
   type: T;
+  context: C;
 }
 
-type Handler<T extends string> = (action: Action<T>) => void | Promise<unknown>;
+export type Handler<T extends Action<string, any>> = (
+  action: T,
+) => void | Promise<unknown>;
 
-type MergeAction<T extends string> = (
-  actions: Action<T>[],
-  cur: Action<T>,
-  curIndex: number,
-  otherActions: Action<T>[],
-) => Action<T>[];
+export type StackEvent<T> = {
+  /**
+   * 1: 下一步; -1: 上一步
+   */
+  step: number;
+  redo: boolean;
+  current?: T;
+  prev?: T;
+};
 
-export default class CommandStack<T extends string> extends EventEmitter {
+export default class CommandStack<
+  T extends Action<string, any>,
+> extends EventEmitter {
   static events = {
     STACK_CHANGE: 'stack.change',
   };
 
-  $stackIdx = -1;
-  $event: {
-    /**
-     * 1: 下一步; -1: 上一步
-     */
-    direction: 1 | -1;
-    current: Action<T>;
-    prev: Action<T>;
-  } | null = null;
-  _stack: Action<T>[] = [];
-  _handlers = {} as Record<T, Handler<T>>;
-  _tmpActions: Action<T>[] = [];
-  // mergeAction?: MergeAction<T>;
+  private $stackIdx = -1;
+  private $event: StackEvent<T> | null = null;
+  _stack: T[] = [];
+  /**
+   * 注册对应的执行事件, 根据 `step > 0` 判断 undo, redo.
+   * 例如: 触发了一次 'create.shape'操作, 执行 undo, 则对应的 'delete.shape' 操作. 反之不变.
+   */
+  _handlers = {} as Record<T['type'], (event: StackEvent<T>) => void>;
 
-  constructor(handlers: Record<T, Handler<T>>) {
+  constructor(
+    handlers = {} as Record<T['type'], (event: StackEvent<T>) => void>,
+  ) {
     super();
     this._handlers = { ...handlers };
     this.rigister();
@@ -42,10 +47,12 @@ export default class CommandStack<T extends string> extends EventEmitter {
     return this.$stackIdx;
   }
   set _stackIdx(value) {
+    const step = value - this.$stackIdx;
     this.$event = {
       current: this._stack[value],
       prev: this._stack[this.$stackIdx],
-      direction: value > this.$stackIdx ? 1 : -1,
+      step,
+      redo: step > 0,
     };
     this.emit(CommandStack.events.STACK_CHANGE, this.$event);
     this.$stackIdx = value;
@@ -59,10 +66,15 @@ export default class CommandStack<T extends string> extends EventEmitter {
     return this._stackIdx >= this._stack.length - 1;
   }
 
-  dispatch(action: Action<T>) {
+  dispatch(action: T) {
     this._stack.splice(this._stackIdx + 1);
     this._stack.push(action);
     this._stackIdx++;
+    this.$event = null;
+  }
+
+  excute(action: T) {
+    this.emit(action.type, this.$event);
     this.$event = null;
   }
 
@@ -76,14 +88,9 @@ export default class CommandStack<T extends string> extends EventEmitter {
     this.excute(this._stack[++this._stackIdx]);
   }
 
-  excute(action: Action<T>) {
-    this.emit(action.type, this.$event);
-    this.$event = null;
-  }
-
-  rigister(handlers?: Record<T, Handler<T>>) {
+  rigister(handlers?: typeof this._handlers) {
     const _handlers = (this._handlers = handlers || this._handlers);
-    let actionType: T;
+    let actionType: T['type'];
     for (actionType in _handlers) {
       this.on(actionType, _handlers[actionType]);
     }
@@ -98,7 +105,7 @@ export default class CommandStack<T extends string> extends EventEmitter {
   destroy() {
     this.clean();
     const _handlers = this._handlers;
-    let actionType: T;
+    let actionType: T['type'];
     for (actionType in _handlers) {
       this.off(actionType, _handlers[actionType]);
     }

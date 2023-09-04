@@ -2,7 +2,9 @@
   "compilerOptions": {
     "target": "ES2015",
     "module": "ES2022",
-    "lib": ["ES2022"],
+    "lib": [
+      "ES2022"
+    ],
     "moduleResolution": "Bundler",
     "resolveJsonModule": true,
     "importHelpers": true,
@@ -18,13 +20,13 @@
     "declaration": true,
     "declarationMap": true
   },
+  "exclude": [
+    "node_modules",
+    "test",
+    "dist"
+  ],
   "include": [
     "typings.d.ts",
     "src/**/*"
-  ],
-  "exclude": [
-    "node_modules",
-    "lib",
-    "dist"
   ]
 }
