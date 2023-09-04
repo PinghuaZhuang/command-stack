@@ -15,8 +15,8 @@ export type StackEvent<T> = {
    */
   step: number;
   redo: boolean;
-  current?: T;
-  prev?: T;
+  target?: T;
+  end?: T;
 };
 
 export default class CommandStack<
@@ -48,21 +48,30 @@ export default class CommandStack<
   }
   set _stackIdx(value) {
     const step = value - this.$stackIdx;
+    const current = this._stack[value];
+    const prev = this._stack[this.$stackIdx];
+    const redo = step > 0;
     this.$event = {
-      current: this._stack[value],
-      prev: this._stack[this.$stackIdx],
+      /**
+       * 当前要操作的 action
+       */
+      target: redo ? current : prev,
+      /**
+       * 操作结束后的 action
+       */
+      end: !redo ? current : prev,
       step,
-      redo: step > 0,
+      redo,
     };
     this.emit(CommandStack.events.STACK_CHANGE, this.$event);
     this.$stackIdx = value;
   }
 
-  get prevDisabled() {
+  get undoDisabled() {
     return this._stackIdx < 0;
   }
 
-  get nextDisabled() {
+  get redoDisabled() {
     return this._stackIdx >= this._stack.length - 1;
   }
 
@@ -79,12 +88,12 @@ export default class CommandStack<
   }
 
   undo() {
-    if (this.prevDisabled) return;
+    if (this.undoDisabled) return;
     this.excute(this._stack[this._stackIdx--]);
   }
 
   redo() {
-    if (this.nextDisabled) return;
+    if (this.redoDisabled) return;
     this.excute(this._stack[++this._stackIdx]);
   }
 

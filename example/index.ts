@@ -1,10 +1,8 @@
 import CommandStack, { Action } from '../src';
 
 enum InputActionType {
-  ADD = 'ADD',
+  INSERT = 'INSERT',
   CHANGE = 'CHANGE',
-  // UPDATE,
-  // DELETE,
 }
 
 type InputAction = Action<InputActionType, {
@@ -26,32 +24,31 @@ window.addEventListener('DOMContentLoaded', () => {
   const InsertBtn = document.querySelector('button[data-type="insert"]') as HTMLButtonElement;
   const updateBtn = document.querySelector('button[data-type="update"]') as HTMLButtonElement;
   const cs = new CommandStack<InputAction>({
-    [InputActionType.ADD]({ redo, current, prev }) {
+    [InputActionType.INSERT]({ redo, target, end }) {
       if (redo) {
-        inp.value = current!.context.value;
-        console.log('ADD redo', inp.value, current, prev);
+        inp.value = target!.context.value;
+        console.log('INSERT redo', inp.value, target, end);
         return;
       }
-      inp.value = prev!.context.oldValue;
-      console.log('ADD undo', inp.value, current, prev);
+      inp.value = target!.context.oldValue;
+      console.log('INSERT undo', inp.value, target, end);
     },
-    [InputActionType.CHANGE]({ redo, current, prev }) {
+    [InputActionType.CHANGE]({ redo, target, end }) {
       if (redo) {
-        inp.value = current!.context.value;
-        console.log('CHANGE redo', inp.value, current, prev);
+        inp.value = target!.context.value;
+        console.log('CHANGE redo', inp.value, target, end);
         return;
       }
-      inp.value = prev!.context.oldValue;
-      console.log('CHANGE undo', inp.value, current, prev);
+      inp.value = target!.context.oldValue;
+      console.log('CHANGE undo', inp.value, target, end);
     },
   });
   // @ts-ignore
   window.cs = cs;
 
   const updateStatus = () => {
-    console.log('input change', cs.prevDisabled, cs.nextDisabled);
-    undoBtn.disabled = cs.prevDisabled;
-    redoBtn.disabled = cs.nextDisabled;
+    undoBtn.disabled = cs.undoDisabled;
+    redoBtn.disabled = cs.redoDisabled;
   }
 
   updateBtn.onclick = (e) => {
@@ -71,7 +68,8 @@ window.addEventListener('DOMContentLoaded', () => {
   };
 
   InsertBtn.onclick = () => {
-    const insert = '{AddTxt}';
+    if (!updateInp.value) return;
+    const insert = `{${updateInp.value}}`;
     const oldValue = inp.value;
     const selectionStart = inp.selectionStart ?? oldValue.length;
     inp.value =
@@ -79,7 +77,7 @@ window.addEventListener('DOMContentLoaded', () => {
       insert +
       oldValue.slice(selectionStart);
     cs.dispatch({
-      type: InputActionType.ADD,
+      type: InputActionType.INSERT,
       context: {
         selectionStart: inp.selectionStart,
         value: inp.value,
