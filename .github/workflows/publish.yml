@@ -37,7 +37,7 @@ jobs:
             ${{ runner.os }}-pnpm-store-
 
       - name: Install and Build
-        run: pnpm install && pnpm build
+        run: pnpm install --no-frozen-lockfile && pnpm build
 
       - name: Publish
         uses: JS-DevTools/npm-publish@v1
