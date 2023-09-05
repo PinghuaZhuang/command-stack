@@ -2,7 +2,11 @@ import { defineConfig } from 'vite';
 // import dts from 'vite-plugin-dts';
 
 export default defineConfig(({ mode }) => {
-  if (mode !== 'umd') return {};
+  if (mode !== 'umd') return {
+    build: {
+      outDir: './example/dist',
+    },
+  };
   return {
     build: {
       lib: {

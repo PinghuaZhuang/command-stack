@@ -1,5 +1,5 @@
 {
-  "name": "command-stack",
+  "name": "@zstark/command-stack",
   "version": "1.0.0",
   "description": "",
   "keywords": [],
@@ -13,6 +13,7 @@
   "scripts": {
     "build": " npm-run-all -s test build:es build:umd",
     "build:umd": "vite --mode=umd build",
+    "build:example": "vite build",
     "dev": "vite",
     "build:es": "tsc",
     "test": "vitest --watch=false"
