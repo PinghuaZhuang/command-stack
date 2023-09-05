@@ -11,9 +11,10 @@
   "author": "",
   "main": "./src/index.ts",
   "scripts": {
-    "build": " npm-run-all -s test tsc",
+    "build": " npm-run-all -s test build:es build:umd",
+    "build:umd": "vite --mode=umd build",
     "dev": "vite",
-    "tsc": "tsc",
+    "build:es": "tsc",
     "test": "vitest --watch=false"
   },
   "dependencies": {

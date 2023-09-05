@@ -15,7 +15,13 @@ export type StackEvent<T> = {
    */
   step: number;
   redo: boolean;
+  /**
+   * 当前要操作的 action
+   */
   target?: T;
+  /**
+   * 操作结束后的 action
+   */
   end?: T;
 };
 
@@ -52,13 +58,7 @@ export default class CommandStack<
     const prev = this._stack[this.$stackIdx];
     const redo = step > 0;
     this.$event = {
-      /**
-       * 当前要操作的 action
-       */
       target: redo ? current : prev,
-      /**
-       * 操作结束后的 action
-       */
       end: !redo ? current : prev,
       step,
       redo,

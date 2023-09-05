@@ -1,4 +1,4 @@
-import CommandStack, { Action } from '../src';
+import CommandStack, { Action } from '../es';
 
 enum InputActionType {
   INSERT = 'INSERT',

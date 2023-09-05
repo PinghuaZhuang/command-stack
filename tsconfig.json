@@ -16,7 +16,9 @@
     "paths": {},
     "allowSyntheticDefaultImports": true,
     "types": [],
-    "outDir": "./dist",
+    "outDir": "./es",
+    // "emitDeclarationOnly": true,
+    // "declarationDir": "./types",
     "declaration": true,
     "declarationMap": true
   },
