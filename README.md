@@ -1,5 +1,7 @@
 # CommandStack
 
+[![publish](https://github.com/PinghuaZhuang/command-stack/actions/workflows/publish.yml/badge.svg)](https://github.com/PinghuaZhuang/command-stack/actions/workflows/publish.yml) [![license](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/PinghuaZhuang/command-stack/blob/master/LICENSE) [![Commit](https://img.shields.io/github/last-commit/pinghuazhuang/command-stack.svg)](https://github.com/PinghuaZhuang/command-stack/commits/master) [![Verison](https://img.shields.io/npm/v/@zstark/command-stack.svg)](https://www.npmjs.com/package/@zstark/command-stack)
+
 常见的 redo, undo操作. 继承 events.
 
 ## Quick start

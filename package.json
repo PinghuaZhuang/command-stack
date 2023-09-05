@@ -11,9 +11,9 @@
   "author": "",
   "main": "./src/index.ts",
   "scripts": {
-    "build": " npm-run-all -s test build:es build:umd",
+    "build": "npm-run-all -s test build:es build:umd",
     "build:umd": "vite --mode=umd build",
-    "build:example": "vite build",
+    "build:example": "tsc && vite build",
     "dev": "vite",
     "build:es": "tsc",
     "test": "vitest --watch=false"
@@ -27,5 +27,9 @@
     "typescript": "^5.2.2",
     "vite": "^4.4.9",
     "vitest": "^0.34.3"
+  },
+  "publishConfig": {
+    "access": "public",
+    "registry": "https://registry.npmjs.org/"
   }
 }
