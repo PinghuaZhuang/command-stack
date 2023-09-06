@@ -5,14 +5,17 @@ enum InputActionType {
   CHANGE = 'CHANGE',
 }
 
-type InputAction = Action<InputActionType, {
-  value: string;
-  oldValue: string;
-  selectionStart: number | null;
-  insert?: string;
-}>;
+type InputAction = Action<
+  InputActionType,
+  {
+    value: string;
+    oldValue: string;
+    selectionStart: number | null;
+    insert?: string;
+  }
+>;
 
-window.addEventListener('DOMContentLoaded', () => {
+(() => {
   const inp = document.querySelector('#inp') as HTMLInputElement;
   const updateInp = document.querySelector('#updateInp') as HTMLInputElement;
   const undoBtn = document.querySelector(
@@ -21,40 +24,43 @@ window.addEventListener('DOMContentLoaded', () => {
   const redoBtn = document.querySelector(
     'button[data-type="redo"]',
   ) as HTMLButtonElement;
-  const InsertBtn = document.querySelector('button[data-type="insert"]') as HTMLButtonElement;
-  const updateBtn = document.querySelector('button[data-type="update"]') as HTMLButtonElement;
+  const InsertBtn = document.querySelector(
+    'button[data-type="insert"]',
+  ) as HTMLButtonElement;
+  const updateBtn = document.querySelector(
+    'button[data-type="update"]',
+  ) as HTMLButtonElement;
+
   const cs = new CommandStack<InputAction>({
     [InputActionType.INSERT]({ redo, target, end }) {
       if (redo) {
         inp.value = target!.context.value;
-        console.log('INSERT redo', inp.value, target, end);
+        console.log('INSERT redo:', inp.value, target, end);
         return;
       }
       inp.value = target!.context.oldValue;
-      console.log('INSERT undo', inp.value, target, end);
+      console.log('INSERT undo:', inp.value, target, end);
     },
     [InputActionType.CHANGE]({ redo, target, end }) {
       if (redo) {
         inp.value = target!.context.value;
-        console.log('CHANGE redo', inp.value, target, end);
+        console.log('CHANGE redo:', inp.value, target, end);
         return;
       }
       inp.value = target!.context.oldValue;
-      console.log('CHANGE undo', inp.value, target, end);
+      console.log('CHANGE undo:', inp.value, target, end);
     },
   });
   // @ts-ignore
   window.cs = cs;
 
-  const updateStatus = () => {
+  cs.on(CommandStack.events.STACK_CHANGE, () => {
     undoBtn.disabled = cs.undoDisabled;
     redoBtn.disabled = cs.redoDisabled;
-  }
-  cs.on(CommandStack.events.STACK_CHANGE, updateStatus);
+  });
 
   updateBtn.onclick = (e) => {
     const value = updateInp.value;
-    console.log('update:', value);
     const oldValue = inp.value;
     inp.value = value;
     cs.dispatch({
@@ -87,13 +93,6 @@ window.addEventListener('DOMContentLoaded', () => {
     });
   };
 
-  undoBtn.onclick = () => {
-    cs.undo();
-    updateStatus();
-  };
-
-  redoBtn.onclick = () => {
-    cs.redo();
-    updateStatus();
-  };
-});
+  undoBtn.onclick = cs.undo.bind(cs);
+  redoBtn.onclick = cs.redo.bind(cs);
+})();

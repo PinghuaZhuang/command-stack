@@ -18,7 +18,7 @@ export type StackEvent<T> = {
   /**
    * 当前要操作的 action
    */
-  target?: T;
+  target: T;
   /**
    * 操作结束后的 action
    */
