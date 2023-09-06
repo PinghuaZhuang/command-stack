@@ -2,7 +2,7 @@
   "name": "@zstark/command-stack",
   "version": "1.0.1",
   "description": "",
-  "keywords": [],
+  "keywords": ["undo-redo"],
   "repository": {
     "type": "git",
     "url": "https://github.com/PinghuaZhuang/command-stack"
