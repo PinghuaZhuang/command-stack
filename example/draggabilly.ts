@@ -14,7 +14,7 @@ type DragAction = Action<
   }
 >;
 
-(() => {
+window.addEventListener('DOMContentLoaded', () => {
   const box = document.querySelector('#box') as HTMLDivElement;
   const undoBtn = document.querySelector(
     'button[data-type="undo-drag"]',
@@ -32,7 +32,7 @@ type DragAction = Action<
   const updateBtnStatus = () => {
     undoBtn.disabled = cs.undoDisabled;
     redoBtn.disabled = cs.redoDisabled;
-  }
+  };
 
   const cs = new CommandStack<DragAction>({
     [DragActionType.MOVE]({
@@ -92,4 +92,4 @@ type DragAction = Action<
   cs.on(CommandStack.events.STACK_CHANGE, updateBtnStatus);
   undoBtn.onclick = cs.undo.bind(cs);
   redoBtn.onclick = cs.redo.bind(cs);
-})();
+});

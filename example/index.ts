@@ -1,4 +1,5 @@
 import CommandStack, { Action } from '../es';
+import './draggabilly';
 
 enum InputActionType {
   INSERT = 'INSERT',
@@ -15,7 +16,7 @@ type InputAction = Action<
   }
 >;
 
-(() => {
+window.addEventListener('DOMContentLoaded', () => {
   const inp = document.querySelector('#inp') as HTMLInputElement;
   const updateInp = document.querySelector('#updateInp') as HTMLInputElement;
   const undoBtn = document.querySelector(
@@ -95,4 +96,4 @@ type InputAction = Action<
 
   undoBtn.onclick = cs.undo.bind(cs);
   redoBtn.onclick = cs.redo.bind(cs);
-})();
+});
