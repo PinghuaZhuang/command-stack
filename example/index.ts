@@ -50,6 +50,7 @@ window.addEventListener('DOMContentLoaded', () => {
     undoBtn.disabled = cs.undoDisabled;
     redoBtn.disabled = cs.redoDisabled;
   }
+  cs.on(CommandStack.events.STACK_CHANGE, updateStatus);
 
   updateBtn.onclick = (e) => {
     const value = updateInp.value;
@@ -64,7 +65,6 @@ window.addEventListener('DOMContentLoaded', () => {
         oldValue,
       },
     });
-    updateStatus();
   };
 
   InsertBtn.onclick = () => {
@@ -85,7 +85,6 @@ window.addEventListener('DOMContentLoaded', () => {
         insert,
       },
     });
-    updateStatus();
   };
 
   undoBtn.onclick = () => {
@@ -97,6 +96,4 @@ window.addEventListener('DOMContentLoaded', () => {
     cs.redo();
     updateStatus();
   };
-
-  updateStatus();
 });

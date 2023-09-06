@@ -63,8 +63,8 @@ export default class CommandStack<
       step,
       redo,
     };
-    this.emit(CommandStack.events.STACK_CHANGE, this.$event);
     this.$stackIdx = value;
+    this.emit(CommandStack.events.STACK_CHANGE, this.$event);
   }
 
   get undoDisabled() {
