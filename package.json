@@ -1,6 +1,6 @@
 {
   "name": "@zstark/command-stack",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "",
   "keywords": [],
   "repository": {
@@ -8,8 +8,18 @@
     "url": "https://github.com/PinghuaZhuang/command-stack"
   },
   "license": "MIT",
-  "author": "",
-  "main": "./src/index.ts",
+  "author": "zphua2016@gmail.com",
+  "exports": {
+    ".": {
+      "types": "./es/index.d.ts",
+      "import": "./es/index.js",
+      "require": "./dist/index.js"
+    }
+  },
+  "files": [
+    "dist",
+    "es"
+  ],
   "scripts": {
     "build": "npm-run-all -s test build:es build:umd",
     "build:umd": "vite --mode=umd build",

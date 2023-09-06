@@ -1,5 +1,0 @@
-vite.config*
-
-*.lock
-*.yarml
-example/dist
