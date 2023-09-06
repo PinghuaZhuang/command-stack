@@ -25,6 +25,13 @@ export type StackEvent<T> = {
   end?: T;
 };
 
+export type CommandStackOption = {
+  /**
+   * 记录最大长度, 默认不限制
+   */
+  maxLength?: number;
+};
+
 export default class CommandStack<
   T extends Action<string, any>,
 > extends EventEmitter {
@@ -32,6 +39,7 @@ export default class CommandStack<
     STACK_CHANGE: 'stack.change',
   };
 
+  option!: CommandStackOption;
   private $stackIdx = -1;
   private $event: StackEvent<T> | null = null;
   _stack: T[] = [];
@@ -43,9 +51,11 @@ export default class CommandStack<
 
   constructor(
     handlers = {} as Record<T['type'], (event: StackEvent<T>) => void>,
+    option: CommandStackOption = {},
   ) {
     super();
     this._handlers = { ...handlers };
+    this.option = { ...option };
     this.rigister();
   }
 
@@ -77,9 +87,15 @@ export default class CommandStack<
 
   dispatch(action: T) {
     this._stack.splice(this._stackIdx + 1);
-    this._stack.push(action);
-    this._stackIdx++;
+    const length = this._stack.push(action);
     this.$event = null;
+    if (
+      Number.isSafeInteger(this.option.maxLength) &&
+      length > (this.option.maxLength as number)
+    ) {
+      this._stack.shift();
+    }
+    this._stackIdx = Math.min(this._stack.length - 1, this._stackIdx + 1);
   }
 
   excute(action: T) {

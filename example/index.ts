@@ -51,6 +51,8 @@ window.addEventListener('DOMContentLoaded', () => {
       inp.value = target!.context.oldValue;
       console.log('CHANGE undo:', inp.value, target, end);
     },
+  }, {
+    maxLength: 5,
   });
   // @ts-ignore
   window.cs = cs;

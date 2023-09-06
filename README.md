@@ -38,12 +38,8 @@ pnpm dev
 
 ~~处理程序可以是 Promise.~~
 
-+ rigister?: Record<ActionTypeEnum, handler>
-+ ~~mergeRule?: (newActions: Action[], cur: Action, curIndex, otherActions: Action[]) => Actioin[].~~
-+ ~~debounce?: 是否开启防抖模式.~~
-  + @default: true
-+ ~~merge?: 是否允许合并操作.~~
-  + @default: true
++ handlers?: Record<ActionTypeEnum, handler>
++ options?: { maxLength: number }
 
 ## Methods
 
