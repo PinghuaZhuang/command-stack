@@ -36,8 +36,6 @@ pnpm dev
 
 ## Options
 
-~~处理程序可以是 Promise.~~
-
 + handlers?: Record<ActionTypeEnum, handler>
 + options?: { maxLength: number }
 
