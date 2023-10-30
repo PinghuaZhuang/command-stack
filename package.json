@@ -31,10 +31,13 @@
     "test": "vitest --watch=false"
   },
   "dependencies": {
-    "events": "^3.3.0"
+    "events": "^3.3.0",
+    "invariant": "^2.2.4",
+    "tapable": "^2.2.1"
   },
   "devDependencies": {
     "@types/events": "^3.0.0",
+    "@types/invariant": "^2.2.36",
     "draggabilly": "^3.0.0",
     "npm-run-all": "^4.1.5",
     "typescript": "^5.2.2",
